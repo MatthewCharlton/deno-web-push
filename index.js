@@ -74575,7 +74575,7 @@ function validatePublicKey(publicKey) {
   if (typeof publicKey !== "string") {
     throw new Error("Vapid public key is must be a URL safe Base 64 encoded string.");
   }
-  if (!isUrlSafeBase64(publicKey)) {
+  if (!validate$1(publicKey)) {
     throw new Error('Vapid public key must be a URL safe Base 64 (without "=")');
   }
   publicKey = decode$1(publicKey);
@@ -74590,7 +74590,7 @@ function validatePrivateKey(privateKey) {
   if (typeof privateKey !== "string") {
     throw new Error("Vapid private key must be a URL safe Base 64 encoded string.");
   }
-  if (!isUrlSafeBase64(privateKey)) {
+  if (!validate$1(privateKey)) {
     throw new Error('Vapid private key must be a URL safe Base 64 (without "=")');
   }
   privateKey = decode$1(privateKey);
@@ -75250,16 +75250,12 @@ WebPushLib.prototype.sendNotification = async function(subscription, payload, op
   let requestDetails;
   try {
     requestDetails = await this.generateRequestDetails(subscription, payload, options);
-  
   } catch (err) {
     return Promise.reject(err);
   }
-  console.log('requestDetails',requestDetails)
-  return new Promise( function(resolve9, reject) {
-    (async () => {
+  return new Promise(async function(resolve9, reject) {
     const httpsOptions = {};
-    const urlParts = parse12(requestDetails.endpoint, true, true);
-    console.log('urlParts',urlParts)
+    const urlParts = parse12(requestDetails.endpoint, false, false);
     httpsOptions.hostname = urlParts.hostname;
     httpsOptions.port = urlParts.port;
     httpsOptions.path = urlParts.path;
@@ -75276,9 +75272,7 @@ WebPushLib.prototype.sendNotification = async function(subscription, payload, op
     }
     const pushResponse = await fetch(requestDetails.endpoint, httpsOptions).catch((e) => {
       reject(e);
-      console.log('err',e)
     });
-    console.log('pushResponse',pushResponse)
     if (pushResponse.statusCode < 200 || pushResponse.statusCode > 299) {
       reject(new web_push_error_default("Received unexpected response code", pushResponse.statusCode, pushResponse.headers, responseText, requestDetails.endpoint));
     } else {
@@ -75289,7 +75283,6 @@ WebPushLib.prototype.sendNotification = async function(subscription, payload, op
         headers: pushResponse.headers
       });
     }
-  })();
   });
 };
 var web_push_lib_default = WebPushLib;

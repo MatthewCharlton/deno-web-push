@@ -10,7 +10,7 @@ import formatPEM from "https://deno.land/x/jose@v4.8.3/lib/format_pem.ts";
 import util from "https://deno.land/std@0.146.0/node/util.ts";
 import {
   encode,
-  isUrlSafeBase64,
+  validate,
   decode
 } from "https://cdn.skypack.dev/urlsafe-base64";
 
@@ -67,7 +67,7 @@ function validatePublicKey(publicKey) {
   if (typeof publicKey !== "string") {
     throw new Error("Vapid public key is must be a URL safe Base 64 encoded string.");
   }
-  if (!isUrlSafeBase64(publicKey)) {
+  if (!validate(publicKey)) {
     throw new Error('Vapid public key must be a URL safe Base 64 (without "=")');
   }
   publicKey = decode(publicKey);
@@ -82,7 +82,7 @@ function validatePrivateKey(privateKey) {
   if (typeof privateKey !== "string") {
     throw new Error("Vapid private key must be a URL safe Base 64 encoded string.");
   }
-  if (!isUrlSafeBase64(privateKey)) {
+  if (!validate(privateKey)) {
     throw new Error('Vapid private key must be a URL safe Base 64 (without "=")');
   }
   privateKey = decode(privateKey);
@@ -732,10 +732,10 @@ WebPushLib.prototype.generateRequestDetails = async function(subscription, paylo
   }
   return requestDetails;
 };
-WebPushLib.prototype.sendNotification = function(subscription, payload, options) {
+WebPushLib.prototype.sendNotification = async function(subscription, payload, options) {
   let requestDetails;
   try {
-    requestDetails = this.generateRequestDetails(subscription, payload, options);
+    requestDetails = await this.generateRequestDetails(subscription, payload, options);
   } catch (err) {
     return Promise.reject(err);
   }

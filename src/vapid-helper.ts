@@ -8,7 +8,7 @@ import formatPEM from 'https://deno.land/x/jose@v4.8.3/lib/format_pem.ts';
 import util from 'https://deno.land/std@0.146.0/node/util.ts';
 import {
   encode,
-  isUrlSafeBase64,
+  validate,
   decode,
   // @ts-ignore gotta trust it
 } from 'https://cdn.skypack.dev/urlsafe-base64';
@@ -83,7 +83,7 @@ function validatePublicKey(publicKey: string) {
     );
   }
 
-  if (!isUrlSafeBase64(publicKey)) {
+  if (!validate(publicKey)) {
     throw new Error(
       'Vapid public key must be a URL safe Base 64 (without "=")'
     );
@@ -107,7 +107,7 @@ function validatePrivateKey(privateKey: string) {
     );
   }
 
-  if (!isUrlSafeBase64(privateKey)) {
+  if (!validate(privateKey)) {
     throw new Error(
       'Vapid private key must be a URL safe Base 64 (without "=")'
     );

@@ -10,14 +10,15 @@ const urlBase64 = require('urlsafe-base64');
 const portfinder = require('portfinder');
 const jws = require('jws');
 const mocha = require('mocha');
+
 const WebPushConstants = {
   supportedContentEncodings: {
     AES_GCM: 'aesgcm',
-    AES_128_GCM: 'aes128gcm'
-  }
+    AES_128_GCM: 'aes128gcm',
+  },
 };
 
-console.log(process.env.NODE_TLS_REJECT_UNAUTHORIZED)
+console.log(process.env.NODE_TLS_REJECT_UNAUTHORIZED);
 
 suite('sendNotification', function () {
   test('is defined', function () {
@@ -26,12 +27,12 @@ suite('sendNotification', function () {
   });
 
   let server;
-  let serverPort =8000;
+  let serverPort;
   const pem = fs.readFileSync('test/data/certs/cert.pem');
   let requestBody;
   let requestDetails;
 
-  // const originalHTTPSRequest = https.request;
+  const originalHTTPSRequest = https.request;
 
   // https request mock to accept self-signed certificate.
   // Probably worth switching with proxyquire and sinon.
@@ -40,42 +41,39 @@ suite('sendNotification', function () {
     return originalHTTPSRequest.call(https, options, listener);
   };
 
-  mocha.beforeEach( () => {
+  mocha.beforeEach(async function () {
     requestBody = null;
     requestDetails = null;
 
     // Delete caches of web push libs to start clean between test runs
-    // delete require.cache[path.join(__dirname, '..', 'index.js')];
+    delete require.cache[path.join(__dirname, '..', 'index.js')];
     // delete require.cache[path.join(__dirname, '..', 'src', 'web-push-lib.ts')];
 
     // Reset https request mock
-    // https.request = certHTTPSRequest;
+    https.request = certHTTPSRequest;
 
+    // console.log('before');
 
-    console.log('before')
-
-    // if (!server) {
-    //   console.log('server',server)
-      //  await startServer();
-       console.log('after')
-       return
-    // }
-    // return  Promise.resolve()
-
+    if (!server) {
+      return await startServer();
+    }
+    return Promise.resolve();
   });
 
-  // mocha.after(function () {
-  //   return closeServer();
-  // });
+  mocha.after(function () {
+    return closeServer();
+  });
 
   const userCurve = crypto.createECDH('prime256v1');
 
   const userPublicKey = userCurve.generateKeys();
   const userAuth = crypto.randomBytes(16);
 
-
-  console.log('userPublicKey',userPublicKey.toString())
-  console.log('urlBase64.encode(userPublicKey)',urlBase64.encode(userPublicKey))
+  // console.log('userPublicKey', userPublicKey.toString());
+  // console.log(
+  //   'urlBase64.encode(userPublicKey)',
+  //   urlBase64.encode(userPublicKey)
+  // );
 
   const VALID_KEYS = {
     p256dh: urlBase64.encode(userPublicKey),
@@ -84,72 +82,70 @@ suite('sendNotification', function () {
 
   const vapidKeys = require('../index.js').generateVAPIDKeys();
 
-  console.log(vapidKeys)
+  // console.log(vapidKeys)
 
+  function startServer() {
+    const options = {
+      key: pem,
+      cert: pem,
+    };
 
-  // function startServer() {
-  //   const options = {
-  //     key: pem,
-  //     cert: pem,
-  //   };
+    server = https.createServer(options, function (req, res) {
+      // console.log('createServer', options);
+      requestBody = Buffer.alloc(0);
 
-  //   server = https.createServer(options, function (req, res) {
-  //     console.log('createServer', options);
-  //     requestBody = Buffer.alloc(0);
+      req.on('data', function (chunk) {
+        // console.log('server data', chunk);
+        requestBody = Buffer.concat([requestBody, chunk]);
+      });
 
-  //     req.on('data', function (chunk) {
-  //       console.log('server data', chunk);
-  //       requestBody = Buffer.concat([requestBody, chunk]);
-  //     });
+      req.on('end', function () {
+        requestDetails = req;
 
-  //     req.on('end', function () {
-  //       requestDetails = req;
+        if (req.url.indexOf('statusCode=404') !== -1) {
+          res.writeHead(404);
+          res.end();
+        } else {
+          res.writeHead(201);
+          res.end('ok');
+        }
+      });
+    });
 
-  //       if (req.url.indexOf('statusCode=404') !== -1) {
-  //         res.writeHead(404);
-  //         res.end();
-  //       } else {
-  //         res.writeHead(201);
-  //         res.end('ok');
-  //       }
-  //     });
-  //   });
+    portfinder.getPort(function (err, port) {
+      console.log('portfinder', port);
+      if (err) {
+        serverPort = 50005;
+      } else {
+        serverPort = port;
+      }
 
-  //   portfinder.getPort(function (err, port) {
-  //     console.log('portfinder', port)
-  //     if (err) {
-  //       serverPort = 50005;
-  //     } else {
-  //       serverPort = port;
-  //     }
+      server.listen(serverPort);
+    });
 
-  //     server.listen(serverPort);
-  //   });
+    return new Promise(function (resolve) {
+      server.on('listening', resolve);
+    });
+  }
 
-  //   // return new Promise(function (resolve) {
-  //   //   server.on('listening', resolve);
-  //   // });
-  // }
+  function closeServer() {
+    serverPort = null;
+    return new Promise(function (resolve) {
+      if (!server) {
+        resolve();
+        return;
+      }
 
-  // function closeServer() {
-  //   serverPort = null;
-  //   return new Promise(function (resolve) {
-  //     if (!server) {
-  //       resolve();
-  //       return;
-  //     }
-
-  //     server.on('close', function () {
-  //       server = null;
-  //       resolve();
-  //     });
-  //     server.close();
-  //   });
-  // }
+      server.on('close', function () {
+        server = null;
+        resolve();
+      });
+      server.close();
+    });
+  }
 
   function validateRequest(request) {
-
-    console.log('aokncokn', request)
+    // console.log('aokncokn', request)
     const options = request.requestOptions;
     const contentEncoding =
       (options.extraOptions && options.extraOptions.contentEncoding) ||
@@ -340,124 +336,124 @@ suite('sendNotification', function () {
         message: 'hello',
       },
     },
-    // {
-    //   testTitle: 'send/receive buffer',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: Buffer.from('hello'),
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive unicode character',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: '😁',
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive without message',
-    //   requestOptions: {
-    //     subscription: {
-    //       // The default endpoint will be added by the test
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive without message with TTL',
-    //   requestOptions: {
-    //     subscription: {
-    //       // The default endpoint will be added by the test
-    //     },
-    //     extraOptions: {
-    //       TTL: 5,
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive string with TTL',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: 'hello',
-    //     extraOptions: {
-    //       TTL: 5,
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'send notification with message with vapid',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: 'hello',
-    //     extraOptions: {
-    //       vapidDetails: {
-    //         subject: 'mailto:mozilla@example.org',
-    //         privateKey: vapidKeys.privateKey,
-    //         publicKey: vapidKeys.publicKey,
-    //       },
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive empty message',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: '',
-    //     extraOptions: {
-    //       TTL: 5,
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'send/receive extra headers',
-    //   requestOptions: {
-    //     subscription: {
-    //       // The default endpoint will be added by the test
-    //     },
-    //     extraOptions: {
-    //       headers: {
-    //         Extra: 'extra',
-    //         'extra-2': 'extra-2',
-    //       },
-    //     },
-    //   },
-    // },
-    // {
-    //   testTitle: 'server returns 201',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: 'hello',
-    //   },
-    //   serverFlags: ['statusCode=201'],
-    // },
-    // {
-    //   testTitle: 'server returns 202',
-    //   requestOptions: {
-    //     subscription: {
-    //       keys: VALID_KEYS,
-    //     },
-    //     message: 'hello',
-    //   },
-    //   serverFlags: ['statusCode=202'],
-    // },
+    {
+      testTitle: 'send/receive buffer',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: Buffer.from('hello'),
+      },
+    },
+    {
+      testTitle: 'send/receive unicode character',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: '😁',
+      },
+    },
+    {
+      testTitle: 'send/receive without message',
+      requestOptions: {
+        subscription: {
+          // The default endpoint will be added by the test
+        },
+      },
+    },
+    {
+      testTitle: 'send/receive without message with TTL',
+      requestOptions: {
+        subscription: {
+          // The default endpoint will be added by the test
+        },
+        extraOptions: {
+          TTL: 5,
+        },
+      },
+    },
+    {
+      testTitle: 'send/receive string with TTL',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: 'hello',
+        extraOptions: {
+          TTL: 5,
+        },
+      },
+    },
+    {
+      testTitle: 'send notification with message with vapid',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: 'hello',
+        extraOptions: {
+          vapidDetails: {
+            subject: 'mailto:mozilla@example.org',
+            privateKey: vapidKeys.privateKey,
+            publicKey: vapidKeys.publicKey,
+          },
+        },
+      },
+    },
+    {
+      testTitle: 'send/receive empty message',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: '',
+        extraOptions: {
+          TTL: 5,
+        },
+      },
+    },
+    {
+      testTitle: 'send/receive extra headers',
+      requestOptions: {
+        subscription: {
+          // The default endpoint will be added by the test
+        },
+        extraOptions: {
+          headers: {
+            Extra: 'extra',
+            'extra-2': 'extra-2',
+          },
+        },
+      },
+    },
+    {
+      testTitle: 'server returns 201',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: 'hello',
+      },
+      serverFlags: ['statusCode=201'],
+    },
+    {
+      testTitle: 'server returns 202',
+      requestOptions: {
+        subscription: {
+          keys: VALID_KEYS,
+        },
+        message: 'hello',
+      },
+      serverFlags: ['statusCode=202'],
+    },
   ];
 
   // TODO: Add test for VAPID override
 
   validRequests.forEach(function (validRequest) {
-    test.only(validRequest.testTitle + ' (aesgcm)', async function () {
-      this.timeout(20000);
+    test(validRequest.testTitle + ' (aesgcm)', async function () {
+      // this.timeout(20000);
       // console.log('server',server)
       // Set the default endpoint if it's not already configured
       if (!validRequest.requestOptions.subscription.endpoint) {
@@ -483,13 +479,14 @@ suite('sendNotification', function () {
           validRequest.requestOptions.extraOptions
         )
         .then(function (response) {
-          console.log('sendNotification', response)
+          // console.log('sendNotification', response);
           assert.equal(response.body, 'ok');
         })
         .then(function () {
           validateRequest(validRequest);
           return true;
-        }).catch(err => console.error(err))
+        })
+        .catch((err) => console.error(err));
     });
 
     test(validRequest.testTitle + ' (aes128gcm)', function () {

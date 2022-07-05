@@ -76575,7 +76575,7 @@ function validatePublicKey(publicKey) {
     if (typeof publicKey !== "string") {
         throw new Error("Vapid public key is must be a URL safe Base 64 encoded string.");
     }
-    if (!isUrlSafeBase64(publicKey)) {
+    if (!validate$1(publicKey)) {
         throw new Error('Vapid public key must be a URL safe Base 64 (without "=")');
     }
     publicKey = decode$1(publicKey);
@@ -76590,7 +76590,7 @@ function validatePrivateKey(privateKey) {
     if (typeof privateKey !== "string") {
         throw new Error("Vapid private key must be a URL safe Base 64 encoded string.");
     }
-    if (!isUrlSafeBase64(privateKey)) {
+    if (!validate$1(privateKey)) {
         throw new Error('Vapid private key must be a URL safe Base 64 (without "=")');
     }
     privateKey = decode$1(privateKey);
@@ -77245,10 +77245,10 @@ WebPushLib.prototype.generateRequestDetails = async function(subscription, paylo
     }
     return requestDetails;
 };
-WebPushLib.prototype.sendNotification = function(subscription, payload, options) {
+WebPushLib.prototype.sendNotification = async function(subscription, payload, options) {
     let requestDetails;
     try {
-        requestDetails = this.generateRequestDetails(subscription, payload, options);
+        requestDetails = await this.generateRequestDetails(subscription, payload, options);
     } catch (err) {
         return Promise.reject(err);
     }
