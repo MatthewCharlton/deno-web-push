@@ -7,7 +7,7 @@ const assert = require('assert');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 const del = require('del');
-const webPush = require('../src/index');
+const webPush = require('../../index.js');
 const createServer = require('./helpers/create-server');
 
 // We need geckodriver on the path

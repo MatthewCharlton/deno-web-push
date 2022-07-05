@@ -5,7 +5,7 @@ const urlBase64 = require('urlsafe-base64');
 const sinon = require('sinon');
 const crypto = require('crypto');
 const mocha = require('mocha');
-const webPush = require('../src/index');
+const webPush = require('../../index.js');
 const vapidHelper = require('../src/vapid-helper');
 
 const VALID_AUDIENCE = 'https://example.com';

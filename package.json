@@ -6,9 +6,12 @@
     "web-push": "src/cli.js"
   },
   "scripts": {
+    "build:deno": "deno run --allow-read --allow-env --allow-write --allow-run deno-build.ts",
+    "build:node": "npm run build && esbuild --bundle index.mjs --format=cjs --outfile=index.js",
+    "build": "npm run build:deno && deno bundle --no-check mod.ts index.mjs",
     "download-browser": "node --harmony ./test/helpers/download-test-browsers.js",
     "lint": "node ./node_modules/eslint/bin/eslint --ignore-path .gitignore '.'",
-    "test": "mocha --ui tdd test/test-encryption-helper*"
+    "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 mocha --ui tdd test/testSendNotification*"
   },
   "repository": {
     "type": "git",
@@ -28,17 +31,17 @@
   "homepage": "https://github.com/web-push-libs/web-push#readme",
   "devDependencies": {
     "asn1.js": "^5.3.0",
-    "http_ece": "1.1.0",
-    "https-proxy-agent": "^5.0.0",
-    "jws": "^4.0.0",
-    "minimist": "^1.2.5",
-    "urlsafe-base64": "^1.0.0",
     "chromedriver": "101.0.0",
     "del": "6.0.0",
+    "esbuild": "^0.14.48",
     "eslint": "8.14.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-import": "2.26.0",
     "geckodriver": "3.0.1",
+    "http_ece": "1.1.0",
+    "https-proxy-agent": "^5.0.0",
+    "jws": "^4.0.0",
+    "minimist": "^1.2.5",
     "mkdirp": "1.0.4",
     "mocha": "^10.0.0",
     "nyc": "15.1.0",
@@ -46,7 +49,8 @@
     "selenium-assistant": "5.4.0",
     "sinon": "13.0.2",
     "ts-node": "^10.8.2",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "urlsafe-base64": "^1.0.0"
   },
   "engines": {
     "node": ">= 6"

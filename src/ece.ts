@@ -15,8 +15,8 @@
  */
 
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
-import { createHmac, randomBytes } from './crypto.ts';
-import * as base64 from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/master/src/index.js';
+import crypto from './crypto.ts';
+import * as base64 from 'https://cdn.skypack.dev/urlsafe-base64';
 const AES_GCM = 'aes-128-gcm';
 const PAD_SIZE = { aes128gcm: 1, aesgcm: 2 };
 const TAG_LENGTH = 16;
@@ -47,7 +47,7 @@ function decode(b: string | Buffer) {
 }
 
 function HMAC_hash(key: string, input: string|Buffer) {
-  const hmac = createHmac('sha256', key);
+  const hmac = crypto.createHmac('sha256', key);
   hmac.update(input);
   return hmac.digest();
 }
@@ -265,7 +265,7 @@ function parseParams(params) {
   if (isNaN(header.rs)) {
     header.rs = 4096;
   }
-  const overhead = PAD_SIZE[header.version];
+  let overhead = PAD_SIZE[header.version];
   if (header.version === 'aes128gcm') {
     overhead += TAG_LENGTH;
   }
@@ -401,7 +401,7 @@ function decrypt(buffer, params, keyLookupCallback) {
     chunkSize += TAG_LENGTH;
   }
 
-  for (const i = 0; start < buffer.length; ++i) {
+  for (let i = 0; start < buffer.length; ++i) {
     let end = start + chunkSize;
     if (header.version !== 'aes128gcm' && end === buffer.length) {
       throw new Error('Truncated payload');
@@ -490,7 +490,7 @@ function encrypt(buffer, params, keyLookupCallback?: Function) {
   }
   const header = parseParams(params);
   if (!header.salt) {
-    header.salt = randomBytes(KEY_LENGTH);
+    header.salt = crypto.randomBytes(KEY_LENGTH);
   }
 
   let result;

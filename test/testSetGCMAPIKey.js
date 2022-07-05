@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const webPush = require('../src/index');
+const webPush = require('../../index.js');
 
 suite('setGCMAPIKey', function() {
   test('is defined', function() {

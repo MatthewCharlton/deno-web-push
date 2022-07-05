@@ -1,6 +1,6 @@
 'use strict';
 
-import { createECDH } from './crypto.ts';
+import crypto from './crypto.ts';
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
 import { parse } from 'https://deno.land/std@0.146.0/node/url.ts';
 import { SignJWT } from 'https://deno.land/x/jose@v4.8.3/index.ts';
@@ -11,7 +11,7 @@ import {
   isUrlSafeBase64,
   decode,
   // @ts-ignore gotta trust it
-} from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/master/src/index.js';
+} from 'https://cdn.skypack.dev/urlsafe-base64';
 
 import { supportedContentEncodings } from './web-push-constants.ts';
 
@@ -24,7 +24,7 @@ const DEFAULT_EXPIRATION_SECONDS = 12 * 60 * 60;
 const MAX_EXPIRATION_SECONDS = 24 * 60 * 60;
 
 function generateVAPIDKeys() {
-  const curve = createECDH('prime256v1');
+  const curve = crypto.createECDH('prime256v1');
   curve.generateKeys();
 
   let publicKeyBuffer = curve.getPublicKey();
@@ -46,8 +46,8 @@ function generateVAPIDKeys() {
   }
 
   return {
-    publicKey: encode(publicKeyBuffer.toString()),
-    privateKey: encode(privateKeyBuffer.toString()),
+    publicKey: encode(publicKeyBuffer),
+    privateKey: encode(privateKeyBuffer),
   };
 }
 

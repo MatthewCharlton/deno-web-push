@@ -1,9 +1,9 @@
 'use strict';
 
-import { createECDH, randomBytes } from './crypto.ts';
+import crypto from './crypto.ts';
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
 import * as ece from './ece.ts';
-import * as urlBase64 from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/master/src/index.js';
+import * as urlBase64 from 'https://cdn.skypack.dev/urlsafe-base64';
 
 export const encrypt = function (
   userPublicKey: string,
@@ -45,10 +45,10 @@ export const encrypt = function (
     payload = Buffer.from(payload);
   }
 
-  const localCurve = createECDH('prime256v1');
+  const localCurve = crypto.createECDH('prime256v1');
   const localPublicKey = localCurve.generateKeys();
 
-  const salt = urlBase64.encode(randomBytes(16).toString());
+  const salt = urlBase64.encode(crypto.randomBytes(16));
 
   const cipherText = ece.encrypt(payload, {
     version: contentEncoding,

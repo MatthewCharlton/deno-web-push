@@ -1,7 +1,7 @@
 'use strict';
 
 import { parse } from 'https://deno.land/std@0.146.0/node/url.ts';
-import { encode } from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/master/src/index.js';
+import { encode } from 'https://cdn.skypack.dev/urlsafe-base64';
 // import { Agent, request } from 'https';
 import WebPushError from './web-push-error.ts';
 import {
@@ -361,14 +361,14 @@ WebPushLib.prototype.generateRequestDetails = async function (
  * resolves if the sending of the notification was successful, otherwise it
  * rejects.
  */
-WebPushLib.prototype.sendNotification = function (
+WebPushLib.prototype.sendNotification = async function (
   subscription,
   payload,
   options
 ) {
   let requestDetails;
   try {
-    requestDetails = this.generateRequestDetails(
+    requestDetails = await this.generateRequestDetails(
       subscription,
       payload,
       options
