@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "lib": [
+            "deno.window",
+        ],
+        "types": [
+            "node"
+        ]
+    }
+}

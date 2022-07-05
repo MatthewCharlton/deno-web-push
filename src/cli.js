@@ -3,7 +3,7 @@
 
 'use strict';
 
-const webPush = require('../src/index.js');
+const webPush = require('../src/index.ts');
 
 const printUsageDetails = () => {
   const actions = [

@@ -2,30 +2,41 @@
 
 const assert = require('assert');
 const crypto = require('crypto');
-const webPush = require('../src/index');
+const webPush = require('../index.js');
 const ece = require('http_ece');
 const urlBase64 = require('urlsafe-base64');
 
+console.log('webPush',webPush);
+
+
+
 const userCurve = crypto.createECDH('prime256v1');
-const VALID_PUBLIC_KEY = urlBase64.encode(userCurve.generateKeys());
+const VALID_PUBLIC_KEY = urlBase64.encode(userCurve.generateKeys()).slice(0, 65);
 const VALID_AUTH = urlBase64.encode(crypto.randomBytes(16));
+
+console.log('VALID_PUBLIC_KEY',VALID_PUBLIC_KEY);
+console.log('VALID_AUTH',VALID_AUTH);
+
+function encryptDecrypt(thing, contentEncoding) {
+  const encrypted = webPush.encrypt(VALID_PUBLIC_KEY, VALID_AUTH, thing, contentEncoding);
+
+  return ece.decrypt(encrypted.cipherText, {
+    version: contentEncoding,
+    dh: urlBase64.encode(encrypted.localPublicKey),
+    privateKey: userCurve,
+    salt: encrypted.salt,
+    authSecret: VALID_AUTH
+  });
+}
+
+console.log("encryptDecrypt('hello', webPush.supportedContentEncodings.AES_GCM)", encryptDecrypt('hello', webPush.supportedContentEncodings.AES_GCM));
 
 suite('Test Encryption Helpers', function() {
   test('is defined', function() {
     assert(webPush.encrypt);
   });
 
-  function encryptDecrypt(thing, contentEncoding) {
-    const encrypted = webPush.encrypt(VALID_PUBLIC_KEY, VALID_AUTH, thing, contentEncoding);
 
-    return ece.decrypt(encrypted.cipherText, {
-      version: contentEncoding,
-      dh: urlBase64.encode(encrypted.localPublicKey),
-      privateKey: userCurve,
-      salt: encrypted.salt,
-      authSecret: VALID_AUTH
-    });
-  }
 
   test('encrypt/decrypt string (aesgcm)', function() {
     assert(encryptDecrypt('hello', webPush.supportedContentEncodings.AES_GCM).equals(Buffer.from('hello')));

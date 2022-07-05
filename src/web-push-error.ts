@@ -1,6 +1,8 @@
 'use strict';
 
-function WebPushError(message, statusCode, headers, body, endpoint) {
+import util from 'https://deno.land/std@0.146.0/node/util.ts'
+
+function WebPushError(this: any, message, statusCode, headers, body, endpoint) {
   Error.captureStackTrace(this, this.constructor);
 
   this.name = this.constructor.name;
@@ -11,6 +13,6 @@ function WebPushError(message, statusCode, headers, body, endpoint) {
   this.endpoint = endpoint;
 }
 
-require('util').inherits(WebPushError, Error);
+util.inherits(WebPushError, Error);
 
-module.exports = WebPushError;
+export default WebPushError;

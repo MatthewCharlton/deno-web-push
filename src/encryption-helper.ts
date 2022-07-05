@@ -1,10 +1,16 @@
 'use strict';
 
-const crypto = require('crypto');
-const ece = require('http_ece');
-const urlBase64 = require('urlsafe-base64');
+import { createECDH, randomBytes } from './crypto.ts';
+import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
+import * as ece from './ece.ts';
+import * as urlBase64 from 'https://raw.githubusercontent.com/commenthol/url-safe-base64/master/src/index.js';
 
-const encrypt = function(userPublicKey, userAuth, payload, contentEncoding) {
+export const encrypt = function (
+  userPublicKey: string,
+  userAuth: string,
+  payload: any,
+  contentEncoding: any
+) {
   if (!userPublicKey) {
     throw new Error('No user public key provided for encryption.');
   }
@@ -26,8 +32,9 @@ const encrypt = function(userPublicKey, userAuth, payload, contentEncoding) {
   }
 
   if (urlBase64.decode(userAuth).length < 16) {
-    throw new Error('The subscription auth key should be at least 16 '
-    + 'bytes long');
+    throw new Error(
+      'The subscription auth key should be at least 16 ' + 'bytes long'
+    );
   }
 
   if (typeof payload !== 'string' && !Buffer.isBuffer(payload)) {
@@ -38,26 +45,22 @@ const encrypt = function(userPublicKey, userAuth, payload, contentEncoding) {
     payload = Buffer.from(payload);
   }
 
-  const localCurve = crypto.createECDH('prime256v1');
+  const localCurve = createECDH('prime256v1');
   const localPublicKey = localCurve.generateKeys();
 
-  const salt = urlBase64.encode(crypto.randomBytes(16));
+  const salt = urlBase64.encode(randomBytes(16).toString());
 
   const cipherText = ece.encrypt(payload, {
     version: contentEncoding,
     dh: userPublicKey,
     privateKey: localCurve,
     salt: salt,
-    authSecret: userAuth
+    authSecret: userAuth,
   });
 
   return {
     localPublicKey: localPublicKey,
     salt: salt,
-    cipherText: cipherText
+    cipherText: cipherText,
   };
-};
-
-module.exports = {
-  encrypt: encrypt
 };

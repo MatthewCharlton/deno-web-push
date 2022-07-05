@@ -1,16 +1,14 @@
 {
-  "name": "web-push",
+  "name": "deno-web-push",
   "version": "3.5.0",
-  "description": "Web Push library for Node.js",
-  "main": "src/index.js",
+  "description": "Web Push library for Deno",
   "bin": {
     "web-push": "src/cli.js"
   },
   "scripts": {
     "download-browser": "node --harmony ./test/helpers/download-test-browsers.js",
     "lint": "node ./node_modules/eslint/bin/eslint --ignore-path .gitignore '.'",
-    "pretest": "npm run lint && npm run download-browser",
-    "test": "nyc --reporter=lcov --reporter=text mocha -- --ui tdd test/test*"
+    "test": "mocha --ui tdd test/test-encryption-helper*"
   },
   "repository": {
     "type": "git",
@@ -28,27 +26,27 @@
     "url": "https://github.com/web-push-libs/web-push/issues"
   },
   "homepage": "https://github.com/web-push-libs/web-push#readme",
-  "dependencies": {
+  "devDependencies": {
     "asn1.js": "^5.3.0",
     "http_ece": "1.1.0",
     "https-proxy-agent": "^5.0.0",
     "jws": "^4.0.0",
     "minimist": "^1.2.5",
-    "urlsafe-base64": "^1.0.0"
-  },
-  "devDependencies": {
+    "urlsafe-base64": "^1.0.0",
     "chromedriver": "101.0.0",
     "del": "6.0.0",
     "eslint": "8.14.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-import": "2.26.0",
     "geckodriver": "3.0.1",
-    "nyc": "15.1.0",
     "mkdirp": "1.0.4",
-    "mocha": "10.0.0",
+    "mocha": "^10.0.0",
+    "nyc": "15.1.0",
     "portfinder": "1.0.28",
     "selenium-assistant": "5.4.0",
-    "sinon": "13.0.2"
+    "sinon": "13.0.2",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
   },
   "engines": {
     "node": ">= 6"
