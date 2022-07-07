@@ -82,8 +82,6 @@ suite('sendNotification', function () {
 
   const vapidKeys = require('../index.js').generateVAPIDKeys();
 
-  // console.log(vapidKeys)
-
   function startServer() {
     const options = {
       key: pem,
@@ -479,7 +477,6 @@ suite('sendNotification', function () {
           validRequest.requestOptions.extraOptions
         )
         .then(function (response) {
-          // console.log('sendNotification', response);
           assert.equal(response.body, 'ok');
         })
         .then(function () {

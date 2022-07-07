@@ -1,16 +1,14 @@
 'use strict';
 
-import crypto from './crypto.ts';
+import cryptoHelpers from './crypto.ts';
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
 import { parse } from 'https://deno.land/std@0.146.0/node/url.ts';
-import { SignJWT } from 'https://deno.land/x/jose@v4.8.3/index.ts';
-import formatPEM from 'https://deno.land/x/jose@v4.8.3/lib/format_pem.ts';
-import util from 'https://deno.land/std@0.146.0/node/util.ts';
+import { SignJWT } from 'https://deno.land/x/jose@v3.19.0/jwt/sign.ts';
+import toPEM from 'https://deno.land/x/jose@v4.8.3/lib/format_pem.ts';
 import {
   encode,
   validate,
   decode,
-  // @ts-ignore gotta trust it
 } from 'https://cdn.skypack.dev/urlsafe-base64';
 
 import { supportedContentEncodings } from './web-push-constants.ts';
@@ -24,7 +22,7 @@ const DEFAULT_EXPIRATION_SECONDS = 12 * 60 * 60;
 const MAX_EXPIRATION_SECONDS = 24 * 60 * 60;
 
 function generateVAPIDKeys() {
-  const curve = crypto.createECDH('prime256v1');
+  const curve = cryptoHelpers.createECDH('prime256v1');
   curve.generateKeys();
 
   let publicKeyBuffer = curve.getPublicKey();
@@ -179,11 +177,8 @@ async function getVapidHeaders(
   publicKey: string,
   privateKey: string,
   contentEncoding: string,
-  expiration: number
-): Promise<
-  | { Authorization: string; 'Crypto-Key'?: undefined }
-  | { Authorization: string; 'Crypto-Key': string }
-> {
+  expiration?: number
+): Promise<{ Authorization: string; 'Crypto-Key'?: string }> {
   if (!audience) {
     throw new Error('No audience could be generated for VAPID.');
   }
@@ -205,7 +200,7 @@ async function getVapidHeaders(
   validatePublicKey(publicKey);
   validatePrivateKey(privateKey);
 
-  privateKey = decode(privateKey);
+  const privateKeyBuffer = decode(privateKey);
 
   if (expiration) {
     validateExpiration(expiration);
@@ -224,11 +219,26 @@ async function getVapidHeaders(
     sub: subject,
   };
 
-  const jwt = await new SignJWT(jwtPayload)
+  console.log('privateKeyBuffer', privateKeyBuffer.toString('base64'));
+
+  const privateKeyToSign = await globalThis.crypto.subtle.importKey(
+    'pkcs8',
+    privateKeyBuffer as unknown as ArrayBuffer,
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-256',
+    },
+    true,
+    ['sign']
+  );
+
+  // console.log('privateKeyToSign', privateKeyToSign);
+
+  const jwt = new SignJWT(jwtPayload)
     .setProtectedHeader(header)
-    .sign(
-      new util.TextEncoder().encode(formatPEM(privateKey, 'EC PRIVATE KEY'))
-    );
+    .sign(privateKeyToSign);
+
+  console.log('jwt', jwt);
 
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
     return {

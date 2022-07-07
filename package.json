@@ -7,8 +7,7 @@
   },
   "scripts": {
     "build:deno": "deno run --allow-read --allow-env --allow-write --allow-run deno-build.ts",
-    "build:node": "npm run build && esbuild --bundle index.mjs --format=cjs --outfile=index.js",
-    "build": "npm run build:deno && deno bundle --no-check mod.ts index.mjs",
+    "build:node": "npm run build:deno && esbuild --bundle index.mjs --format=cjs --outfile=index.js",
     "download-browser": "node --harmony ./test/helpers/download-test-browsers.js",
     "lint": "node ./node_modules/eslint/bin/eslint --ignore-path .gitignore '.'",
     "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 mocha --ui tdd test/testSendNotification*"

@@ -15,7 +15,7 @@
  */
 
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
-import crypto from './crypto.ts';
+import cryptoHelpers from './crypto.ts';
 import * as base64 from 'https://cdn.skypack.dev/urlsafe-base64';
 const AES_GCM = 'aes-128-gcm';
 const PAD_SIZE = { aes128gcm: 1, aesgcm: 2 };
@@ -27,16 +27,16 @@ const MODE_ENCRYPT = 'encrypt';
 const MODE_DECRYPT = 'decrypt';
 
 let keylog: (arg0: string, arg1: any) => typeof arg1;
-if (import.meta.env?.ECE_KEYLOG === '1') {
+// if (import.meta.env?.ECE_KEYLOG === '1') {
+//   keylog = function (m, k) {
+//     console.warn(m + ' [' + k.length + ']: ' + base64.encode(k));
+//     return k;
+//   };
+// } else {
   keylog = function (m, k) {
-    console.warn(m + ' [' + k.length + ']: ' + base64.encode(k));
     return k;
   };
-} else {
-  keylog = function (m, k) {
-    return k;
-  };
-}
+// }
 
 /* Optionally base64 decode something. */
 function decode(b: string | Buffer) {
@@ -47,7 +47,7 @@ function decode(b: string | Buffer) {
 }
 
 function HMAC_hash(key: string, input: string|Buffer) {
-  const hmac = crypto.createHmac('sha256', key);
+  const hmac = cryptoHelpers.createHmac('sha256', key);
   hmac.update(input);
   return hmac.digest();
 }
@@ -359,7 +359,7 @@ function unpad(data, last) {
 function decryptRecord(key, counter, buffer, header, last) {
   keylog('decrypt', buffer);
   const nonce = generateNonce(key.nonce, counter);
-  const gcm = crypto.createDecipheriv(AES_GCM, key.key, nonce);
+  const gcm = cryptoHelpers.createDecipheriv(AES_GCM, key.key, nonce);
   gcm.setAuthTag(buffer.slice(buffer.length - TAG_LENGTH));
   let data = gcm.update(buffer.slice(0, buffer.length - TAG_LENGTH));
   data = Buffer.concat([data, gcm.final()]);
@@ -427,7 +427,7 @@ function encryptRecord(key, counter, buffer, pad, header, last) {
   keylog('encrypt', buffer);
   pad = pad || 0;
   const nonce = generateNonce(key.nonce, counter);
-  const gcm = crypto.createCipheriv(AES_GCM, key.key, nonce);
+  const gcm = cryptoHelpers.createCipheriv(AES_GCM, key.key, nonce);
 
   const ciphertext = [];
   const padSize = PAD_SIZE[header.version];
@@ -484,13 +484,13 @@ function writeHeader(header) {
  * receiver.  |params.privateKey| is used to establish a shared secret.  Key
  * pairs can be created using |createECDH()|.
  */
-function encrypt(buffer, params, keyLookupCallback?: Function) {
+function encrypt(buffer: Buffer, params, keyLookupCallback?: Function) {
   if (!Buffer.isBuffer(buffer)) {
     throw new Error('buffer argument must be a Buffer');
   }
   const header = parseParams(params);
   if (!header.salt) {
-    header.salt = crypto.randomBytes(KEY_LENGTH);
+    header.salt = cryptoHelpers.randomBytes(KEY_LENGTH);
   }
 
   let result;

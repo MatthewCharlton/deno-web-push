@@ -1,3 +1,3 @@
-import * as crypto from 'https://esm.sh/crypto-browserify';
+import * as cryptoHelpers from 'https://esm.sh/crypto-browserify?bundle';
 
-export default crypto;
+export default cryptoHelpers;

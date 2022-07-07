@@ -1,6 +1,6 @@
 'use strict';
 
-import crypto from './crypto.ts';
+import cryptoHelpers from './crypto.ts';
 import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
 import * as ece from './ece.ts';
 import * as urlBase64 from 'https://cdn.skypack.dev/urlsafe-base64';
@@ -8,7 +8,7 @@ import * as urlBase64 from 'https://cdn.skypack.dev/urlsafe-base64';
 export const encrypt = function (
   userPublicKey: string,
   userAuth: string,
-  payload: any,
+  payload: string | Buffer,
   contentEncoding: any
 ) {
   if (!userPublicKey) {
@@ -37,6 +37,17 @@ export const encrypt = function (
     );
   }
 
+  // console.log(
+  //   'payload',
+  //   payload,
+  //   payload instanceof Uint8Array,
+  //   Buffer.isBuffer(payload)
+  // );
+
+  if (payload instanceof Uint8Array) {
+    payload = new Buffer(payload);
+  }
+
   if (typeof payload !== 'string' && !Buffer.isBuffer(payload)) {
     throw new Error('Payload must be either a string or a Node Buffer.');
   }
@@ -45,10 +56,10 @@ export const encrypt = function (
     payload = Buffer.from(payload);
   }
 
-  const localCurve = crypto.createECDH('prime256v1');
-  const localPublicKey = localCurve.generateKeys();
+  const localCurve = cryptoHelpers.createECDH('prime256v1');
+  const localPublicKey: Buffer = localCurve.generateKeys();
 
-  const salt = urlBase64.encode(crypto.randomBytes(16));
+  const salt: string = urlBase64.encode(cryptoHelpers.randomBytes(16));
 
   const cipherText = ece.encrypt(payload, {
     version: contentEncoding,

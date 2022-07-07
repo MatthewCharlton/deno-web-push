@@ -90,7 +90,7 @@ WebPushLib.prototype.setVapidDetails = function (
  * @return {Object}                       This method returns an Object which
  * contains 'endpoint', 'method', 'headers' and 'payload'.
  */
-WebPushLib.prototype.generateRequestDetails = async function (
+WebPushLib.prototype.generateRequestDetails = function (
   subscription,
   payload,
   options
@@ -218,21 +218,21 @@ WebPushLib.prototype.generateRequestDetails = async function (
       }
     }
 
-    if (options.agent) {
-      if (options.agent instanceof Agent) {
-        if (proxy) {
-          console.warn(
-            'Agent option will be ignored because proxy option is defined.'
-          );
-        }
+    // if (options.agent) {
+    //   if (options.agent instanceof Agent) {
+    //     if (proxy) {
+    //       console.warn(
+    //         'Agent option will be ignored because proxy option is defined.'
+    //       );
+    //     }
 
-        agent = options.agent;
-      } else {
-        console.warn(
-          'Wrong type for the agent option, it should be an instance of https.Agent.'
-        );
-      }
-    }
+    //     agent = options.agent;
+    //   } else {
+    //     console.warn(
+    //       'Wrong type for the agent option, it should be an instance of https.Agent.'
+    //     );
+    //   }
+    // }
 
     if (typeof options.timeout === 'number') {
       timeout = options.timeout;
@@ -291,7 +291,7 @@ WebPushLib.prototype.generateRequestDetails = async function (
   const isFCM =
     subscription.endpoint.indexOf('https://fcm.googleapis.com/fcm/send') === 0;
   // VAPID isn't supported by GCM hence the if, else if.
-  if (isGCM) {
+  if (isGCM) {  
     if (!currentGCMAPIKey) {
       console.warn(
         'Attempt to send push notification to GCM endpoint, ' +
@@ -302,10 +302,10 @@ WebPushLib.prototype.generateRequestDetails = async function (
       requestDetails.headers.Authorization = 'key=' + currentGCMAPIKey;
     }
   } else if (currentVapidDetails) {
-    const parsedUrl = parse(subscription.endpoint);
+    const parsedUrl = parse(subscription.endpoint, false, false);
     const audience = parsedUrl.protocol + '//' + parsedUrl.host;
 
-    const vapidHeaders = await getVapidHeaders(
+    const vapidHeaders = getVapidHeaders(
       audience,
       currentVapidDetails.subject,
       currentVapidDetails.publicKey,
@@ -361,14 +361,16 @@ WebPushLib.prototype.generateRequestDetails = async function (
  * resolves if the sending of the notification was successful, otherwise it
  * rejects.
  */
-WebPushLib.prototype.sendNotification = async function (
+WebPushLib.prototype.sendNotification = function (
   subscription,
-  payload,
+  payload: string | Buffer,
   options
 ) {
   let requestDetails;
+
+  // console.log('payload', typeof payload, payload instanceof Buffer, payload)
   try {
-    requestDetails = await this.generateRequestDetails(
+    requestDetails = this.generateRequestDetails(
       subscription,
       payload,
       options
