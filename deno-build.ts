@@ -44,7 +44,7 @@ const CryptoKey =  globalThis.crypto.CryptoKey;
 );
 
 const esm = await esbuild.build({
-  plugins: [denoPlugin()],
+  // plugins: [denoPlugin()],
   entryPoints: ['src/index.ts'],
   bundle: true,
   format: 'esm',
