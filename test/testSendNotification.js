@@ -20,7 +20,11 @@ const WebPushConstants = {
 
 console.log(process.env.NODE_TLS_REJECT_UNAUTHORIZED);
 
+let vapidKeys;
+
 suite('sendNotification', function () {
+  vapidKeys = require('../index.js').generateVAPIDKeys();
+
   test('is defined', function () {
     const webPush = require('../index.js');
     assert(webPush.sendNotification);
@@ -33,6 +37,8 @@ suite('sendNotification', function () {
   let requestDetails;
 
   const originalHTTPSRequest = https.request;
+
+  const originalFetch = globalThis.fetch;
 
   // https request mock to accept self-signed certificate.
   // Probably worth switching with proxyquire and sinon.
@@ -79,8 +85,6 @@ suite('sendNotification', function () {
     p256dh: urlBase64.encode(userPublicKey),
     auth: urlBase64.encode(userAuth),
   };
-
-  const vapidKeys = require('../index.js').generateVAPIDKeys();
 
   function startServer() {
     const options = {
@@ -143,8 +147,8 @@ suite('sendNotification', function () {
   }
 
   function validateRequest(request) {
-    // console.log('aokncokn', request)
     const options = request.requestOptions;
+    // console.log('options', request);
     const contentEncoding =
       (options.extraOptions && options.extraOptions.contentEncoding) ||
       WebPushConstants.supportedContentEncodings.AES_GCM;
@@ -198,7 +202,7 @@ suite('sendNotification', function () {
         'Check Content-Type header'
       );
 
-      const keys = requestDetails.headers['crypto-key'].split(';');
+      const keys = requestDetails.headers['Crypto-Key'].split(';');
       const appServerPublicKey = keys
         .find(function (key) {
           return key.indexOf('dh=') === 0;
@@ -486,7 +490,7 @@ suite('sendNotification', function () {
         .catch((err) => console.error(err));
     });
 
-    test(validRequest.testTitle + ' (aes128gcm)', function () {
+    test(validRequest.testTitle + ' (aes128gcm)', async function () {
       // Set the default endpoint if it's not already configured
       if (!validRequest.requestOptions.subscription.endpoint) {
         validRequest.requestOptions.subscription.endpoint =
@@ -504,7 +508,7 @@ suite('sendNotification', function () {
         WebPushConstants.supportedContentEncodings.AES_128_GCM;
 
       const webPush = require('../index.js');
-      return webPush
+      return await webPush
         .sendNotification(
           validRequest.requestOptions.subscription,
           validRequest.requestOptions.message,
@@ -688,15 +692,24 @@ suite('sendNotification', function () {
   ];
 
   validGCMRequests.forEach(function (validGCMRequest) {
-    test(validGCMRequest.testTitle, function () {
+    test(validGCMRequest.testTitle, async function () {
       // This mocks out the httpsrequest used by web push.
       // Probably worth switching with proxyquire and sinon.
-      https.request = function (options, listener) {
+      globalThis.fetch = (url, options) => {
+        const newURrl = url
+          .replace(
+            'https://android.googleapis.com/gcm/send/someSubscriptionID',
+            'https://127.0.0.1:' + serverPort
+          )
+          .replace(
+            'https://fcm.googleapis.com/fcm/send/someSubscriptionID',
+            'https://127.0.0.1:' + serverPort
+          );
         options.hostname = '127.0.0.1';
         options.port = serverPort;
         options.path = '/';
 
-        return certHTTPSRequest.call(https, options, listener);
+        return originalFetch(newURrl, options);
       };
 
       // Set the default endpoint if it's not already configured
@@ -722,7 +735,7 @@ suite('sendNotification', function () {
         );
       }
 
-      return webPush
+      return await webPush
         .sendNotification(
           validGCMRequest.requestOptions.subscription,
           validGCMRequest.requestOptions.message,
@@ -932,7 +945,7 @@ suite('sendNotification', function () {
   ];
 
   invalidRequests.forEach(function (invalidRequest) {
-    test(invalidRequest.testTitle + ' (aesgcm)', function () {
+    test(invalidRequest.testTitle + ' (aesgcm)', async function () {
       if (invalidRequest.addEndpoint) {
         invalidRequest.requestOptions.subscription.endpoint =
           'https://127.0.0.1:' + serverPort;
@@ -949,7 +962,7 @@ suite('sendNotification', function () {
         WebPushConstants.supportedContentEncodings.AES_GCM;
 
       const webPush = require('../index.js');
-      return webPush
+      return await webPush
         .sendNotification(
           invalidRequest.requestOptions.subscription,
           invalidRequest.requestOptions.message,
@@ -965,7 +978,7 @@ suite('sendNotification', function () {
         );
     });
 
-    test(invalidRequest.testTitle + ' (aes128gcm)', function () {
+    test(invalidRequest.testTitle + ' (aes128gcm)', async function () {
       if (invalidRequest.addEndpoint) {
         invalidRequest.requestOptions.subscription.endpoint =
           'https://127.0.0.1:' + serverPort;
@@ -982,7 +995,7 @@ suite('sendNotification', function () {
         WebPushConstants.supportedContentEncodings.AES_128_GCM;
 
       const webPush = require('../index.js');
-      return webPush
+      return await webPush
         .sendNotification(
           invalidRequest.requestOptions.subscription,
           invalidRequest.requestOptions.message,
@@ -1001,9 +1014,9 @@ suite('sendNotification', function () {
 
   test("rejects when it can't connect to the server", function () {
     const currentServerPort = serverPort;
-    return closeServer().then(function () {
+    return closeServer().then(async function () {
       const webPush = require('../index.js');
-      return webPush
+      return await webPush
         .sendNotification({
           endpoint: 'https://127.0.0.1:' + currentServerPort,
         })

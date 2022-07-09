@@ -90,7 +90,7 @@ WebPushLib.prototype.setVapidDetails = function (
  * @return {Object}                       This method returns an Object which
  * contains 'endpoint', 'method', 'headers' and 'payload'.
  */
-WebPushLib.prototype.generateRequestDetails = function (
+WebPushLib.prototype.generateRequestDetails = async function (
   subscription,
   payload,
   options
@@ -305,6 +305,8 @@ WebPushLib.prototype.generateRequestDetails = function (
     const parsedUrl = parse(subscription.endpoint, false, false);
     const audience = parsedUrl.protocol + '//' + parsedUrl.host;
 
+    // console.log('parsedUrl',parsedUrl)
+
     const vapidHeaders = getVapidHeaders(
       audience,
       currentVapidDetails.subject,
@@ -344,6 +346,8 @@ WebPushLib.prototype.generateRequestDetails = function (
     requestDetails.timeout = timeout;
   }
 
+  // console.log('requestDetails',requestDetails)
+
   return requestDetails;
 };
 
@@ -361,7 +365,7 @@ WebPushLib.prototype.generateRequestDetails = function (
  * resolves if the sending of the notification was successful, otherwise it
  * rejects.
  */
-WebPushLib.prototype.sendNotification = function (
+WebPushLib.prototype.sendNotification = async function (
   subscription,
   payload: string | Buffer,
   options
@@ -370,7 +374,7 @@ WebPushLib.prototype.sendNotification = function (
 
   // console.log('payload', typeof payload, payload instanceof Buffer, payload)
   try {
-    requestDetails = this.generateRequestDetails(
+    requestDetails = await this.generateRequestDetails(
       subscription,
       payload,
       options
@@ -413,6 +417,8 @@ WebPushLib.prototype.sendNotification = function (
     ).catch((e) => {
       reject(e);
     });
+
+    // console.log('pushResponse',pushResponse)
 
     if (pushResponse.statusCode < 200 || pushResponse.statusCode > 299) {
       reject(
