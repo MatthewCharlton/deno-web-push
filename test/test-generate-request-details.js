@@ -16,7 +16,7 @@ suite('Test Generate Request Details', function() {
   const userCurve = crypto.createECDH('prime256v1');
   const userPublicKey = userCurve.generateKeys();
   const userAuth = crypto.randomBytes(16);
-  const vapidKeys = require('../src/vapid-helper').generateVAPIDKeys();
+  const vapidKeys = require('../index.js').generateVAPIDKeys();
 
   const VALID_KEYS = {
     p256dh: urlBase64.encode(userPublicKey),

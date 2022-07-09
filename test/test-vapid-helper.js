@@ -5,8 +5,8 @@ const urlBase64 = require('urlsafe-base64');
 const sinon = require('sinon');
 const crypto = require('crypto');
 const mocha = require('mocha');
-const webPush = require('../../index.js');
-const vapidHelper = require('../src/vapid-helper');
+
+const webPush = require('../index.js');
 
 const VALID_AUDIENCE = 'https://example.com';
 const VALID_SUBJECT_MAILTO = 'mailto: example@example.com';
@@ -80,79 +80,79 @@ suite('Test Vapid Helpers', function() {
     const badInputs = [
       function() {
         // No args
-        vapidHelper.getVapidHeaders();
+        webPush.getVapidHeaders();
       },
       function() {
         // Missing subject, public key, private key
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE);
+        webPush.getVapidHeaders(VALID_AUDIENCE);
       },
       function() {
         // Missing public key, private key
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO);
       },
       function() {
         // Missing public key, private key
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL);
       },
       function() {
         // Missing private key
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders('Not a URL', VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders('Not a URL', VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, 'Some Random String', VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders(VALID_AUDIENCE, 'Some Random String', VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, 'Example key', VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, 'Example key', VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, Buffer.alloc(5), VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, Buffer.alloc(5), VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, 'Example Key');
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, 'Example Key');
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, Buffer.alloc(5));
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, Buffer.alloc(5));
       },
       function() {
-        vapidHelper.getVapidHeaders({ something: 'else' }, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders({ something: 'else' }, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, { something: 'else' }, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
+        webPush.getVapidHeaders(VALID_AUDIENCE, { something: 'else' }, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY);
       },
       function() {
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, 'invalid encoding type');
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, 'invalid encoding type');
       },
       function () {
         // Public key with unsafe base64
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_UNSAFE_BASE64_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_UNSAFE_BASE64_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING);
       },
       function () {
         // Private key with unsafe base64
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_UNSAFE_BASE64_PRIVATE_KEY, VALID_CONTENT_ENCODING);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_UNSAFE_BASE64_PRIVATE_KEY, VALID_CONTENT_ENCODING);
       },
       function () {
         // String with text, is not accepted as a valid expiration value
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, 'Not valid expiration: Must be a number, this is a string with text');
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, 'Not valid expiration: Must be a number, this is a string with text');
       },
       function () {
         // Object is not accepted as a valid expiration value
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, { message: 'Not valid expiration: Must be a number, this is an object' });
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, { message: 'Not valid expiration: Must be a number, this is an object' });
       },
       function () {
         // Boolean is not accepted as a valid expiration value
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, true);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, true);
       },
       function () {
         // String is not accepted as a valid expiration value
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, '12213');
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, '12213');
       },
       function () {
         // Invalid `expiration` as it exceeds 24 hours in duration
         const invalidExpiration = Math.floor(Date.now() / 1000) + (25 * 60 * 60);
-        vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, invalidExpiration);
+        webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, VALID_CONTENT_ENCODING, invalidExpiration);
       }
     ];
 
@@ -166,25 +166,25 @@ suite('Test Vapid Helpers', function() {
 
   const validInputs = [
     function(contentEncoding) {
-      return vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding);
+      return webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding);
     },
     function(contentEncoding) {
-      return vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding);
+      return webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_MAILTO, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding);
     },
     function(contentEncoding) {
-      return vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, VALID_EXPIRATION);
+      return webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, VALID_EXPIRATION);
     },
     function(contentEncoding) {
       // 0 is a valid value for `expiration`
       // since the the `expiration` value isn't checked for minimum
       const secondsFromEpoch = 0;
-      return vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, secondsFromEpoch);
+      return webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, secondsFromEpoch);
     },
     function (contentEncoding) {
       // Valid value for `secondsFromEpoch` passed in to
-      // `vapidHelper.getVapidHeaders` function
+      // `webPush.getVapidHeaders` function
       const secondsFromEpoch = Math.floor(Date.now() / 1000) + (5 * 60 * 60);
-      return vapidHelper.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, secondsFromEpoch);
+      return webPush.getVapidHeaders(VALID_AUDIENCE, VALID_SUBJECT_URL, VALID_PUBLIC_KEY, VALID_PRIVATE_KEY, contentEncoding, secondsFromEpoch);
     }
   ];
 

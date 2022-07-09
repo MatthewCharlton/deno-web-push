@@ -10,7 +10,7 @@
     "build:node": "npm run build:deno && esbuild --bundle index.mjs --format=cjs --outfile=index.js",
     "download-browser": "node --harmony ./test/helpers/download-test-browsers.js",
     "lint": "node ./node_modules/eslint/bin/eslint --ignore-path .gitignore '.'",
-    "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 mocha --ui tdd test/testSendNotification*"
+    "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 mocha --ui tdd test/test*"
   },
   "repository": {
     "type": "git",
