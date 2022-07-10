@@ -90,7 +90,7 @@ WebPushLib.prototype.setVapidDetails = function (
  * @return {Object}                       This method returns an Object which
  * contains 'endpoint', 'method', 'headers' and 'payload'.
  */
-WebPushLib.prototype.generateRequestDetails = async function (
+WebPushLib.prototype.generateRequestDetails = function (
   subscription,
   payload,
   options
