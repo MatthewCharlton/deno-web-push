@@ -247,6 +247,8 @@ function getVapidHeaders(
   });
 
   console.log('jwt', jwt);
+  console.log('toPEM(publicKey)', toPEM(publicKey), publicKey);
+  console.log('toPEM(privateKey)', toPEM(privateKey), privateKey);
 
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
     return {

@@ -152,6 +152,8 @@ function getVapidHeaders(audience, subject, publicKey, privateKey, contentEncodi
     privateKey: toPEM(privateKey)
   });
   console.log("jwt", jwt);
+  console.log("toPEM(publicKey)", toPEM(publicKey), publicKey);
+  console.log("toPEM(privateKey)", toPEM(privateKey), privateKey);
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
     return {
       Authorization: "vapid t=" + jwt + ", k=" + publicKey
