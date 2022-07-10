@@ -34,8 +34,8 @@ get: () => {}
 arch: 'x86_64'
 }
 };
-}
 globalThis.crypto= require('node:crypto').webcrypto;
+}
 const CryptoKey =  globalThis.crypto.CryptoKey;
 
 `
