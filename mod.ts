@@ -5,8 +5,8 @@ var crypto_default = cryptoHelpers;
 // src/vapid-helper.ts
 import { Buffer } from "https://deno.land/std@0.147.0/node/buffer.ts";
 import { parse } from "https://deno.land/std@0.146.0/node/url.ts";
-import * as jws from "https://esm.sh/jws@4.0.0?bundle&target=es2019";
-import asn1 from "https://esm.sh/asn1.js@5.4.1?bundle&target=es2020";
+import * as jws from "https://esm.sh/jws@4.0.0?target=es2020";
+import asn1 from "https://esm.sh/asn1.js@5.4.1?target=es2020";
 import {
   encode,
   validate,
@@ -151,6 +151,7 @@ function getVapidHeaders(audience, subject, publicKey, privateKey, contentEncodi
     payload: jwtPayload,
     privateKey: toPEM(privateKey)
   });
+  console.log("jwt", jwt);
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
     return {
       Authorization: "vapid t=" + jwt + ", k=" + publicKey

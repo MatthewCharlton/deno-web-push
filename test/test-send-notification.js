@@ -24,7 +24,7 @@ let vapidKeys;
 
 suite('sendNotification', function () {
   vapidKeys = require('../index.js').generateVAPIDKeys();
-
+  
   test('is defined', function () {
     const webPush = require('../index.js');
     assert(webPush.sendNotification);
