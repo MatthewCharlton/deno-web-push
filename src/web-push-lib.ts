@@ -1,7 +1,7 @@
 'use strict';
 
 import { parse } from 'https://deno.land/std@0.146.0/node/url.ts';
-import { encode } from 'https://cdn.skypack.dev/urlsafe-base64';
+import { encode } from 'https://esm.sh/urlsafe-base64@1.0.0?target=es2020';
 // import { Agent, request } from 'https';
 import WebPushError from './web-push-error.ts';
 import {

@@ -1,9 +1,9 @@
 'use strict';
 
 import cryptoHelpers from './crypto.ts';
-import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.147.0/node/buffer.ts';
 import * as ece from './ece.ts';
-import * as urlBase64 from 'https://cdn.skypack.dev/urlsafe-base64';
+import * as urlBase64 from 'https://esm.sh/urlsafe-base64@1.0.0?target=es2020';
 
 export const encrypt = function (
   userPublicKey: string,
@@ -45,7 +45,7 @@ export const encrypt = function (
   // );
 
   if (payload instanceof Uint8Array) {
-    payload = new Buffer(payload);
+    payload = Buffer(payload);
   }
 
   if (typeof payload !== 'string' && !Buffer.isBuffer(payload)) {

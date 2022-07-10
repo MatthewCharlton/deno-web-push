@@ -14,9 +14,9 @@
  *    This version is selected by default, unless you specify a |padSize| of 1.
  */
 
-import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.147.0/node/buffer.ts';
 import cryptoHelpers from './crypto.ts';
-import * as base64 from 'https://cdn.skypack.dev/urlsafe-base64';
+import * as base64 from 'https://esm.sh/urlsafe-base64@1.0.0?target=es2020';
 const AES_GCM = 'aes-128-gcm';
 const PAD_SIZE = { aes128gcm: 1, aesgcm: 2 };
 const TAG_LENGTH = 16;

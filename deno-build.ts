@@ -48,7 +48,17 @@ const esm = await esbuild.build({
   entryPoints: ['src/index.ts'],
   bundle: true,
   format: 'esm',
-  outfile: 'mod.ts',
+  outfile: 'index.mjs',
 });
 console.log('result:', esm);
+esbuild.stop();
+
+const deno = await esbuild.build({
+  // plugins: [denoPlugin()],
+  entryPoints: ['src/index.ts'],
+  bundle: true,
+  format: 'esm',
+  outfile: 'mod.ts',
+});
+console.log('result:', deno);
 esbuild.stop();

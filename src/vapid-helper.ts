@@ -1,7 +1,7 @@
 'use strict';
 
 import cryptoHelpers from './crypto.ts';
-import { Buffer } from 'https://deno.land/std@0.141.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.147.0/node/buffer.ts';
 import { parse } from 'https://deno.land/std@0.146.0/node/url.ts';
 import * as jws from 'https://esm.sh/jws@4.0.0?bundle&target=es2019';
 import asn1 from 'https://esm.sh/asn1.js@5.4.1?bundle&target=es2020';
@@ -9,7 +9,7 @@ import {
   encode,
   validate,
   decode,
-} from 'https://cdn.skypack.dev/urlsafe-base64';
+} from 'https://esm.sh/urlsafe-base64@1.0.0?target=es2020';
 
 import { supportedContentEncodings } from './web-push-constants.ts';
 

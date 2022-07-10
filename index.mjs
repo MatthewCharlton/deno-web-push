@@ -1,55 +1,15 @@
-"use strict";
-if (typeof Deno === 'undefined') {
-  globalThis.addEventListener = () => {};
-  globalThis.Deno = {
-    env: {
-get: () => {}
-    },
-    args: [],
-    errors: {
-    PermissionDenied: Error
-  },
-  build:{
-arch: 'x86_64'
-}
-};
-globalThis.crypto= require('node:crypto').webcrypto;
-}
-const CryptoKey =  globalThis.crypto.CryptoKey;
-
-
 var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __require = /* @__PURE__ */ ((x2) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x2, {
+  get: (a2, b2) => (typeof require !== "undefined" ? require : a2)[b2]
+}) : x2)(function(x2) {
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
+  throw new Error('Dynamic require of "' + x2 + '" is not supported');
+});
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to2, from3, except, desc) => {
-  if (from3 && typeof from3 === "object" || typeof from3 === "function") {
-    for (let key2 of __getOwnPropNames(from3))
-      if (!__hasOwnProp.call(to2, key2) && key2 !== except)
-        __defProp(to2, key2, { get: () => from3[key2], enumerable: !(desc = __getOwnPropDesc(from3, key2)) || desc.enumerable });
-  }
-  return to2;
-};
-var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
-
-// deno:file:///Users/mcharlton/OtherCode/deno-web-push/src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  WebPushError: () => web_push_error_default,
-  encrypt: () => encrypt9,
-  generateRequestDetails: () => generateRequestDetails,
-  generateVAPIDKeys: () => generateVAPIDKeys,
-  getVapidHeaders: () => getVapidHeaders,
-  sendNotification: () => sendNotification,
-  setGCMAPIKey: () => setGCMAPIKey,
-  setVapidDetails: () => setVapidDetails,
-  supportedContentEncodings: () => supportedContentEncodings
-});
-module.exports = __toCommonJS(src_exports);
 
 // deno:https://esm.sh/crypto-browserify?bundle
 var crypto_browserify_bundle_exports = {};
@@ -24809,9 +24769,9 @@ var b1 = Object.getOwnPropertyDescriptor;
 var m1 = Object.getOwnPropertyNames;
 var g1 = Object.getPrototypeOf;
 var y1 = Object.prototype.hasOwnProperty;
-var Ke = ((t) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof require != "undefined" ? require : e)[r] }) : t)(function(t) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var Ke = ((t) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof __require != "undefined" ? __require : e)[r] }) : t)(function(t) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + t + '" is not supported');
 });
 var k2 = (t, e) => () => (e || t((e = { exports: {} }).exports, e), e.exports);
@@ -45176,9 +45136,9 @@ var B2 = Object.getOwnPropertyDescriptor;
 var k3 = Object.getOwnPropertyNames;
 var L = Object.getPrototypeOf;
 var U = Object.prototype.hasOwnProperty;
-var A = ((t) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof require != "undefined" ? require : e)[r] }) : t)(function(t) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var A = ((t) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof __require != "undefined" ? __require : e)[r] }) : t)(function(t) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + t + '" is not supported');
 });
 var g = (t, e) => () => (e || t((e = { exports: {} }).exports, e), e.exports);
@@ -46602,9 +46562,9 @@ var Ct = Object.getOwnPropertyDescriptor;
 var It = Object.getOwnPropertyNames;
 var jt = Object.getPrototypeOf;
 var kt = Object.prototype.hasOwnProperty;
-var y3 = ((e) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(e, { get: (t, r) => (typeof require != "undefined" ? require : t)[r] }) : e)(function(e) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var y3 = ((e) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(e, { get: (t, r) => (typeof __require != "undefined" ? __require : t)[r] }) : e)(function(e) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + e + '" is not supported');
 });
 var c3 = (e, t) => () => (t || e((t = { exports: {} }).exports, t), t.exports);
@@ -47777,9 +47737,9 @@ var g12 = Object.getOwnPropertyDescriptor;
 var y12 = Object.getOwnPropertyNames;
 var _12 = Object.getPrototypeOf;
 var w1 = Object.prototype.hasOwnProperty;
-var Ke4 = ((t) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof require != "undefined" ? require : e)[r] }) : t)(function(t) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var Ke4 = ((t) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(t, { get: (e, r) => (typeof __require != "undefined" ? __require : e)[r] }) : t)(function(t) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + t + '" is not supported');
 });
 var k4 = (t, e) => () => (e || t((e = { exports: {} }).exports, e), e.exports);
@@ -57055,9 +57015,9 @@ var Ce2 = Object.getOwnPropertyDescriptor;
 var je = Object.getOwnPropertyNames;
 var Fe3 = Object.getPrototypeOf;
 var Ue2 = Object.prototype.hasOwnProperty;
-var c4 = ((e) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(e, { get: (r, t) => (typeof require != "undefined" ? require : r)[t] }) : e)(function(e) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var c4 = ((e) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(e, { get: (r, t) => (typeof __require != "undefined" ? __require : r)[t] }) : e)(function(e) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + e + '" is not supported');
 });
 var p2 = (e, r) => () => (r || e((r = { exports: {} }).exports, r), r.exports);
@@ -57481,9 +57441,9 @@ var Ur2 = Object.getOwnPropertyDescriptor;
 var Ir = Object.getOwnPropertyNames;
 var Cr = Object.getPrototypeOf;
 var Lr3 = Object.prototype.hasOwnProperty;
-var Xe = ((d5) => typeof require != "undefined" ? require : typeof Proxy != "undefined" ? new Proxy(d5, { get: (r, n) => (typeof require != "undefined" ? require : r)[n] }) : d5)(function(d5) {
-  if (typeof require != "undefined")
-    return require.apply(this, arguments);
+var Xe = ((d5) => typeof __require != "undefined" ? __require : typeof Proxy != "undefined" ? new Proxy(d5, { get: (r, n) => (typeof __require != "undefined" ? __require : r)[n] }) : d5)(function(d5) {
+  if (typeof __require != "undefined")
+    return __require.apply(this, arguments);
   throw new Error('Dynamic require of "' + d5 + '" is not supported');
 });
 var ct3 = (d5, r) => () => (r || d5((r = { exports: {} }).exports, r), r.exports);
@@ -60199,6 +60159,17 @@ var setGCMAPIKey = webPush.setGCMAPIKey;
 var setVapidDetails = webPush.setVapidDetails;
 var generateRequestDetails = webPush.generateRequestDetails;
 var sendNotification = webPush.sendNotification;
+export {
+  web_push_error_default as WebPushError,
+  encrypt9 as encrypt,
+  generateRequestDetails,
+  generateVAPIDKeys,
+  getVapidHeaders,
+  sendNotification,
+  setGCMAPIKey,
+  setVapidDetails,
+  supportedContentEncodings
+};
 /*!
  * The buffer module from node.js, for the browser.
  *
