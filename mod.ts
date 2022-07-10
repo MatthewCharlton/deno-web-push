@@ -152,8 +152,8 @@ function getVapidHeaders(audience, subject, publicKey, privateKey, contentEncodi
     privateKey: toPEM(privateKey)
   });
   console.log("jwt", jwt);
-  console.log("toPEM(publicKey)", toPEM(publicKey), publicKey);
-  console.log("toPEM(privateKey)", toPEM(privateKey), privateKey);
+  console.log("decode(publicKey)", decode(publicKey));
+  console.log("decode(privateKey)", decode(privateKey));
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
     return {
       Authorization: "vapid t=" + jwt + ", k=" + publicKey
@@ -594,7 +594,7 @@ WebPushLib.prototype.setVapidDetails = function(subject, publicKey, privateKey) 
     privateKey
   };
 };
-WebPushLib.prototype.generateRequestDetails = async function(subscription, payload, options) {
+WebPushLib.prototype.generateRequestDetails = function(subscription, payload, options) {
   if (!subscription || !subscription.endpoint) {
     throw new Error("You must pass in a subscription with at least an endpoint.");
   }
