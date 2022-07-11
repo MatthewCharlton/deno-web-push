@@ -60332,13 +60332,13 @@ WebPushLib.prototype.sendNotification = async function(subscription, payload, op
     const pushResponse = await fetch(requestDetails.endpoint, httpsOptions).catch((e) => {
       reject(e);
     });
+    const responseJSON = await pushResponse.text();
     if (pushResponse.status < 200 || pushResponse.status > 299) {
       reject(new web_push_error_default("Received unexpected response code", pushResponse.status, pushResponse.headers, responseText, requestDetails.endpoint));
     } else {
-      const responseText2 = await pushResponse.text();
       resolve7({
         status: pushResponse.status,
-        body: responseText2,
+        body: responseJSON,
         headers: pushResponse.headers
       });
     }
