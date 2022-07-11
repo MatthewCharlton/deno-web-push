@@ -7,7 +7,7 @@ function WebPushError(this: any, message, statusCode, headers, body, endpoint) {
 
   this.name = this.constructor.name;
   this.message = message;
-  this.statusCode = statusCode;
+  this.status = statusCode;
   this.headers = headers;
   this.body = body;
   this.endpoint = endpoint;
