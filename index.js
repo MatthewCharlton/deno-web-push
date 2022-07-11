@@ -59769,18 +59769,18 @@ function getVapidHeaders(audience, subject, publicKey, privateKey, contentEncodi
   console.log("jwt", jwt);
   console.log("contentEncoding", contentEncoding);
   if (contentEncoding === supportedContentEncodings.AES_128_GCM) {
-    console.log({
+    console.log(JSON.stringify({
       Authorization: "vapid t=" + jwt + ", k=" + publicKey
-    });
+    }));
     return {
       Authorization: "vapid t=" + jwt + ", k=" + publicKey
     };
   }
   if (contentEncoding === supportedContentEncodings.AES_GCM) {
-    console.log({
+    console.log(JSON.stringify({
       Authorization: "WebPush " + jwt,
       "Crypto-Key": "p256ecdsa=" + publicKey
-    });
+    }));
     return {
       Authorization: "WebPush " + jwt,
       "Crypto-Key": "p256ecdsa=" + publicKey
