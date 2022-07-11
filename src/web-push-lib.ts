@@ -420,7 +420,7 @@ WebPushLib.prototype.sendNotification = async function (
 
     // console.log('pushResponse',pushResponse)
 
-    const responseJSON = await pushResponse.text();
+    const responseText = await pushResponse.text();
 
     if (pushResponse.status < 200 || pushResponse.status > 299) {
       reject(
@@ -433,10 +433,9 @@ WebPushLib.prototype.sendNotification = async function (
         )
       );
     } else {
-      
       resolve({
         status: pushResponse.status,
-        body: responseJSON,
+        body: responseText,
         headers: pushResponse.headers,
       });
     }
