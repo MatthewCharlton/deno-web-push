@@ -420,11 +420,11 @@ WebPushLib.prototype.sendNotification = async function (
 
     // console.log('pushResponse',pushResponse)
 
-    if (pushResponse.statusCode < 200 || pushResponse.statusCode > 299) {
+    if (pushResponse.status < 200 || pushResponse.status > 299) {
       reject(
         new WebPushError(
           'Received unexpected response code',
-          pushResponse.statusCode,
+          pushResponse.status,
           pushResponse.headers,
           responseText,
           requestDetails.endpoint
@@ -433,7 +433,7 @@ WebPushLib.prototype.sendNotification = async function (
     } else {
       const responseText = await pushResponse.text();
       resolve({
-        statusCode: pushResponse.statusCode,
+        status: pushResponse.status,
         body: responseText,
         headers: pushResponse.headers,
       });

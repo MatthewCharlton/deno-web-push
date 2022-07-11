@@ -59627,7 +59627,6 @@ function generateVAPIDKeys() {
     padding.fill(0);
     publicKeyBuffer = Buffer3.concat([padding, publicKeyBuffer]);
   }
-  console.log("encode(privateKeyBuffer)", z6(privateKeyBuffer));
   return {
     publicKey: z6(publicKeyBuffer),
     privateKey: z6(privateKeyBuffer)
@@ -60333,12 +60332,12 @@ WebPushLib.prototype.sendNotification = async function(subscription, payload, op
     const pushResponse = await fetch(requestDetails.endpoint, httpsOptions).catch((e) => {
       reject(e);
     });
-    if (pushResponse.statusCode < 200 || pushResponse.statusCode > 299) {
-      reject(new web_push_error_default("Received unexpected response code", pushResponse.statusCode, pushResponse.headers, responseText, requestDetails.endpoint));
+    if (pushResponse.status < 200 || pushResponse.status > 299) {
+      reject(new web_push_error_default("Received unexpected response code", pushResponse.status, pushResponse.headers, responseText, requestDetails.endpoint));
     } else {
       const responseText2 = await pushResponse.text();
       resolve7({
-        statusCode: pushResponse.statusCode,
+        status: pushResponse.status,
         body: responseText2,
         headers: pushResponse.headers
       });

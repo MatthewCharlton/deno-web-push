@@ -66,8 +66,6 @@ function generateVAPIDKeys() {
     publicKeyBuffer = Buffer.concat([padding, publicKeyBuffer]);
   }
 
-  console.log('encode(privateKeyBuffer)', encode(privateKeyBuffer));
-
   return {
     publicKey: encode(publicKeyBuffer),
     privateKey: encode(privateKeyBuffer),
